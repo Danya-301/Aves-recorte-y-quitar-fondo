@@ -1,11 +1,18 @@
 import os
 from PIL import Image
 from rembg import remove
+import cv2
+
 CONST_OUTPUT_WIDTH = 224
 
-
 def getfolders(folder_path):
-    return os.listdir(folder_path)
+    # Verifica si el folder_path es válido
+    if not os.path.exists(folder_path):
+        return []  # Retorna una lista vacía si la ruta no existe
+    
+    # Lista únicamente los directorios en la carpeta especificada
+    return [folder for folder in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, folder))]
+
 
 def crop_images_in_folder(folder_path, output_size=(224, 224)):
     """
@@ -36,10 +43,6 @@ def crop_images_in_folder(folder_path, output_size=(224, 224)):
                 cropped_img.save(output_path)
 
     print(f"Todas las imagenes han sido cortadas. Estan guardadas en: {output_folder}")
-
-import os
-import cv2
-from PIL import Image
 
 def resize_images_in_folder(folder_path, output_size=(224, 224)):
     # Crear carpetas de salida
@@ -92,11 +95,11 @@ def remove_background(input_folder, output_folder):
                 output = remove(img)
                 output.save(output_path, format='PNG')
 
-    print(f"Fondo removido. Iamgenes procesadas estan guardadas en: {output_folder}")
+    print(f"Fondo removido. Imagenes procesadas estan guardadas en: {output_folder}")
 
 
 def fillbgimages_in_folder(folder_path):
-    input_folder = os.path.join(folder_path, "no_background")
+    input_folder = folder_path
     output_folder = os.path.join(folder_path, "fillbg_images")
     os.makedirs(output_folder, exist_ok=True)
 

@@ -6,7 +6,13 @@ import pandas as pd
 
 def main():
     st.title("Procesamiento de Imágenes")
-    base_folder = st.text_input("Ruta del dataset", "E:\OneDrive - Universidad Cooperativa de Colombia\entrega dataset")
+    base_folder = st.text_input("Ruta del dataset", "",)
+    # Verificar si la ruta es válida antes de continuar
+    
+    if not os.path.isdir(base_folder):
+        st.error("Por favor, introduce una ruta de carpeta válida.")
+        return
+    
     especies=getfolders(base_folder)
     data =[]
     for  especie in especies:
@@ -24,39 +30,40 @@ def main():
 
     progress_text = "procesando, por favor espere ..."
     my_bar = st.progress(0, text=progress_text)
-    col1, col2 ,col3 = st.columns(3)
+    col1, col2 ,col3, col4 = st.columns(4)
     with col1:
-        on = st.toggle("")
+        on = st.toggle("¿Desea redimensionar y recortar las imágenes?")
     if on:
         with col2:
-            if st.button("Redimensionar Imágenes"):
+            if st.button("Recortar y redimensionar imágenes"):
                 for folder in folders:
-                    resize_images_in_folder(f"{base_folder}\{folder}")
+                    resize_images_in_folder(rf"{base_folder}\\{folder}")
                     my_bar.progress(percent_complete + step, text=progress_text)
                 my_bar.empty()
                 st.success("Imágenes recortadas y redimensionadas con éxito!")
     else:
         with col2:
-            if st.button("Recortar Imágenes"):
+            if st.button("Recortar imágenes"):
                 for folder in folders:
-                    crop_images_in_folder(f"{base_folder}\{folder}")
+                    crop_images_in_folder(rf"{base_folder}\\{folder}")
                     my_bar.progress(percent_complete + step, text=progress_text)
                 my_bar.empty()
                 st.success("Imágenes recortadas con éxito!")
     with col3:
         if st.button("Remover Fondo"):
             for folder in folders:
-                no_bg_folder = os.path.join(f"{base_folder}\{folder}", "no_background")
-                remove_background(f"{base_folder}\{folder}\\cropped_images_square", no_bg_folder)
+                no_bg_folder = os.path.join(rf"{base_folder}\\{folder}", "no_background")
+                remove_background(rf"{base_folder}\\{folder}", no_bg_folder)
                 my_bar.progress(percent_complete + step, text=progress_text)
             my_bar.empty()
             st.success("Fondo removido de las imágenes con éxito!")
-    if st.button("Rellenar Fondo"):
-            for folder in folders:
-                fillbgimages_in_folder(f"{base_folder}\{folder}")
-                my_bar.progress(percent_complete + step, text=progress_text)
-            my_bar.empty()
-            st.success("Fondo removido de las imágenes con éxito!")
+    with col4:    
+        if st.button("Rellenar Fondo"):
+                for folder in folders:
+                    fillbgimages_in_folder(rf"{base_folder}\\{folder}")
+                    my_bar.progress(percent_complete + step, text=progress_text)
+                my_bar.empty()
+                st.success("Fondo removido de las imágenes con éxito!")
 
 if __name__ == "__main__":
     main()
