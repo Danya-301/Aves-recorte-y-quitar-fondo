@@ -2,6 +2,13 @@
 
 ### Instalación 🔧
 
+_instalar entorno virtual_
+
+```
+python -m venv venv
+
+```
+
 _instalar las dependencias_
 * streamlit - interfaz grafica
 * Pillow - recorta las imagenes
@@ -10,13 +17,8 @@ _instalar las dependencias_
 * cv2 - hace el reescalado de las imagenes
 
 ```
-pip install streamlit
-pip install pillow
-pip install rembg
-pip install pandas
-pip install opencv-python
+pip install -r requirements.txt
 ```
-
 
 ### funcionaminto 🔌
 
