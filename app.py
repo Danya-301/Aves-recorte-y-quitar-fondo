@@ -5,14 +5,23 @@ import cv2
 
 CONST_OUTPUT_WIDTH = 224
 
-def getfolders(folder_path):
-    # Verifica si el folder_path es válido
-    if not os.path.exists(folder_path):
+def getfolders(base_folder):
+    if not os.path.exists(base_folder):
         return []  # Retorna una lista vacía si la ruta no existe
     
-    # Lista únicamente los directorios en la carpeta especificada
-    return [folder for folder in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, folder))]
-
+    # Carpeta de resize
+    resize_folder = r"C:\Users\dmedina\Documents\Daniel\Ucc\10mo\Electiva 3\DataSet resize"
+    
+    original_folders = []
+    
+    for folder in os.listdir(base_folder):
+        folder_path = os.path.join(base_folder, folder)
+        if os.path.isdir(folder_path):
+            # Verifica si el nombre de la ave ya existe en la carpeta de resize
+            if not any(folder in resized_folder for resized_folder in os.listdir(resize_folder) if os.path.exists(resize_folder)):
+                original_folders.append(folder)
+    
+    return original_folders
 
 def crop_images_in_folder(folder_path, output_size=(224, 224)):
     """
@@ -23,9 +32,10 @@ def crop_images_in_folder(folder_path, output_size=(224, 224)):
     folder_path (str): Ruta a la carpeta que contiene las imágenes
     output_size (tuple): Tamaño de salida deseado (ancho, alto)
     """
-    output_folder = os.path.join(folder_path, "result")
+    base_output_folder = r"C:\Users\dmedina\Documents\Daniel\Ucc\10mo\Electiva 3\DataSet crop"
+    folder_name = os.path.basename(folder_path)
+    output_folder = os.path.join(base_output_folder, f"{folder_name} cropped")
     os.makedirs(output_folder, exist_ok=True)
-
     for filename in os.listdir(folder_path):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
             file_path = os.path.join(folder_path, filename)
@@ -43,12 +53,14 @@ def crop_images_in_folder(folder_path, output_size=(224, 224)):
                 cropped_img.save(output_path)
 
     print(f"Todas las imagenes han sido cortadas. Estan guardadas en: {output_folder}")
+    return output_folder
 
 def resize_images_in_folder(folder_path, output_size=(224, 224)):
     # Crear carpetas de salida
-    output_folder = os.path.join(folder_path, "cropped_images_square")
+    base_output_folder = r"C:\Users\dmedina\Documents\Daniel\Ucc\10mo\Electiva 3\DataSet resize"
+    folder_name = os.path.basename(folder_path)
+    output_folder = os.path.join(base_output_folder, f"{folder_name} resized")
     os.makedirs(output_folder, exist_ok=True)
-
     # Parte 1: Recortar las imágenes para hacerlas cuadradas
     for filename in os.listdir(folder_path):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
@@ -81,9 +93,11 @@ def resize_images_in_folder(folder_path, output_size=(224, 224)):
     
 
     print(f"Todas las imágenes han sido recortadas y redimensionadas. Las imágenes recortadas están en: {output_folder}, y las redimensionadas en: ")
-
-def remove_background(input_folder, output_folder):
-    
+    return output_folder
+def remove_background(input_folder):
+    base_output_folder = r"C:\Users\dmedina\Documents\Daniel\Ucc\10mo\Electiva 3\DataSet remove background"
+    folder_name = os.path.basename(input_folder)
+    output_folder = os.path.join(base_output_folder, f"{folder_name} no_background")
     os.makedirs(output_folder, exist_ok=True)
 
     for filename in os.listdir(input_folder):
@@ -96,16 +110,17 @@ def remove_background(input_folder, output_folder):
                 output.save(output_path, format='PNG')
 
     print(f"Fondo removido. Imagenes procesadas estan guardadas en: {output_folder}")
-
+    return output_folder
 
 def fillbgimages_in_folder(folder_path):
-    input_folder = folder_path
-    output_folder = os.path.join(folder_path, "fillbg_images")
+    base_output_folder = r"C:\Users\dmedina\Documents\Daniel\Ucc\10mo\Electiva 3\DataSet fill background"
+    folder_name = os.path.basename(folder_path)
+    output_folder = os.path.join(base_output_folder, f"{folder_name} fillbg")
     os.makedirs(output_folder, exist_ok=True)
 
-    for filename in os.listdir(input_folder):
+    for filename in os.listdir(folder_path):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
-            file_path = os.path.join(input_folder, filename)
+            file_path = os.path.join(folder_path, filename)
             with Image.open(file_path) as img:
                 # Create a new image with a green background
                # Create a new image with a sky blue background
@@ -122,4 +137,5 @@ def fillbgimages_in_folder(folder_path):
                 green_image.save(output_path)
 
     print(f"Todas las imagenes han sido rellenadas. Estan guardadas en: {output_folder}")
+    return output_folder
 
